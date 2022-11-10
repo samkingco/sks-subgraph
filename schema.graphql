@@ -1,0 +1,75 @@
+enum ProjectType {
+  Unknown
+  Roots
+  ICE64
+  Drops
+}
+
+type Registry @entity {
+  id: ID!
+  roots: Bytes
+  ice64: Bytes
+  drops: Bytes
+}
+
+type RootsSettings @entity {
+  id: ID!
+  address: Bytes!
+}
+
+type ICE64Settings @entity {
+  id: ID!
+  address: Bytes!
+}
+
+type DropsSettings @entity {
+  id: ID!
+  address: Bytes!
+}
+
+type RootsNFT @entity {
+  id: ID!
+  uri: String
+  owner: Wallet!
+  claimedICE64Edition: Boolean!
+}
+
+type ICE64OriginalNFT @entity {
+  id: ID!
+  uri: String
+  owner: Wallet!
+}
+
+type ICE64EditionNFT @entity {
+  id: ID!
+  uri: String
+  owners: [Wallet!]!
+  mintedCount: BigInt!
+}
+
+type DropsNFT @entity {
+  id: ID!
+  uri: String
+  owners: [Wallet!]!
+  mintedCount: BigInt!
+}
+
+type Wallet @entity {
+  id: ID!
+  address: Bytes!
+  roots: [RootsNFT!]! @derivedFrom(field: "owner")
+  ice64Originals: [ICE64OriginalNFT!]! @derivedFrom(field: "owner")
+  ice64Editions: [ICE64EditionNFT!]! @derivedFrom(field: "owners")
+  drops: [DropsNFT!]! @derivedFrom(field: "owners")
+}
+
+type Transfer @entity {
+  id: ID!
+  project: ProjectType!
+  from: Wallet!
+  to: Wallet!
+  ids: [BigInt!]!
+  amounts: [BigInt!]!
+  txHash: Bytes!
+  timestamp: BigInt!
+}

@@ -59,14 +59,14 @@ export function handleTransfer(event: TransferSingle): void {
   let fromWallet = Wallet.load(from.toHexString());
   if (!fromWallet) {
     fromWallet = new Wallet(from.toHexString());
-    fromWallet.address = from;
+    fromWallet.address = from.toHexString();
     fromWallet.save();
   }
 
   let toWallet = Wallet.load(to.toHexString());
   if (!toWallet) {
     toWallet = new Wallet(to.toHexString());
-    toWallet.address = to;
+    toWallet.address = to.toHexString();
     toWallet.save();
   }
 

@@ -1,6 +1,7 @@
 enum ProjectType {
   Unknown
   Roots
+  RootsEditions
   ICE64
   Drops
 }
@@ -8,11 +9,17 @@ enum ProjectType {
 type Registry @entity {
   id: ID!
   roots: Bytes
+  rootsEditions: Bytes
   ice64: Bytes
   drops: Bytes
 }
 
 type RootsSettings @entity {
+  id: ID!
+  address: Bytes!
+}
+
+type RootsEditionsSettings @entity {
   id: ID!
   address: Bytes!
 }
@@ -32,6 +39,14 @@ type RootsNFT @entity {
   uri: String
   owner: Wallet!
   claimedICE64Edition: Boolean!
+}
+
+type RootsEditionNFT @entity {
+  id: ID!
+  uri: String
+  owner: Wallet!
+  releaseId: BigInt!
+  editionNumber: BigInt!
 }
 
 type ICE64OriginalNFT @entity {
@@ -56,8 +71,9 @@ type DropsNFT @entity {
 
 type Wallet @entity {
   id: ID!
-  address: Bytes!
+  address: String!
   roots: [RootsNFT!]! @derivedFrom(field: "owner")
+  rootsEditions: [RootsEditionNFT!]! @derivedFrom(field: "owner")
   ice64Originals: [ICE64OriginalNFT!]! @derivedFrom(field: "owner")
   ice64Editions: [ICE64EditionNFT!]! @derivedFrom(field: "owners")
   drops: [DropsNFT!]! @derivedFrom(field: "owners")

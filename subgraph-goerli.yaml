@@ -1,0 +1,31 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: RootsEditions
+    network: goerli
+    source:
+      address: "0xC9589e957182DBe34c2aFE5A5140F794f9152e99"
+      abi: RootsEditions
+      startBlock: 8211783
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - RootsEditionNFT
+        - Wallet
+        - Transfer
+      abis:
+        - name: RootsEditions
+          file: ./abis/RootsEditions.json
+      eventHandlers:
+        - event: Initialized()
+          handler: handleInit
+        - event: ArtistProofMint(indexed uint256)
+          handler: handleArtistProofMint
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/rootsEditions.ts
+  

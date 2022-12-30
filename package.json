@@ -2,9 +2,10 @@
   "name": "sks-subgraph",
   "private": true,
   "scripts": {
-    "codegen": "graph codegen subgraph.yaml",
-    "build": "graph build subgraph.yaml",
-    "deploy": "graph deploy --product hosted-service samkingco/sks subgraph.yaml"
+    "codegen": "graph codegen subgraph*.yaml",
+    "build": "graph build subgraph*.yaml",
+    "deploy:mainnet": "graph deploy --product hosted-service samkingco/sks subgraph-mainnet.yaml",
+    "deploy:goerli": "graph deploy --product hosted-service samkingco/sks-goerli subgraph-goerli.yaml"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.35.0"

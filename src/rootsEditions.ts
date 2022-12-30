@@ -1,35 +1,53 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
-import { Roots, Transfer as TransferEvent } from "../generated/Roots/Roots";
+import {
+  ArtistProofMint,
+  Initialized,
+  RootsEditions,
+  Transfer as TransferEvent,
+} from "../generated/RootsEditions/RootsEditions";
 
 import {
   Registry,
-  RootsNFT,
-  RootsSettings,
+  RootsEditionNFT,
+  RootsEditionsSettings,
   Transfer,
   Wallet,
 } from "../generated/schema";
-import { REGISTRY_ID, ROOTS_SETTINGS_ID } from "./constants";
+import { REGISTRY_ID, ROOTS_EDITIONS_SETTINGS_ID } from "./constants";
 
-export function handleTransfer(event: TransferEvent): void {
-  const contract = Roots.bind(event.address);
-  const from = event.params.from;
-  const to = event.params.to;
-  const id = event.params.id;
+export function handleInit(event: Initialized): void {
+  const contract = RootsEditions.bind(event.address);
 
   let registry = Registry.load(REGISTRY_ID);
   if (!registry) {
     registry = new Registry(REGISTRY_ID);
   }
-  if (!registry.roots) {
-    registry.roots = contract._address;
+  if (!registry.rootsEditions) {
+    registry.rootsEditions = contract._address;
     registry.save();
   }
 
-  let settings = RootsSettings.load(ROOTS_SETTINGS_ID);
+  let settings = RootsEditionsSettings.load(ROOTS_EDITIONS_SETTINGS_ID);
   if (!settings) {
-    settings = new RootsSettings(ROOTS_SETTINGS_ID);
+    settings = new RootsEditionsSettings(ROOTS_EDITIONS_SETTINGS_ID);
     settings.address = contract._address;
     settings.save();
+  }
+}
+
+export function handleArtistProofMint(event: ArtistProofMint): void {}
+
+export function handleTransfer(event: TransferEvent): void {
+  const contract = RootsEditions.bind(event.address);
+  const from = event.params.from;
+  const to = event.params.to;
+  const id = event.params.id;
+
+  let releaseId = id.div(BigInt.fromI32(100));
+  let editionNumber = id.mod(BigInt.fromI32(100));
+
+  if (editionNumber.equals(BigInt.fromI32(0))) {
+    releaseId = releaseId.plus(BigInt.fromI32(1));
   }
 
   let fromWallet = Wallet.load(from.toHexString());
@@ -46,16 +64,18 @@ export function handleTransfer(event: TransferEvent): void {
     toWallet.save();
   }
 
-  let token = RootsNFT.load(id.toString());
+  let token = RootsEditionNFT.load(id.toString());
   if (!token) {
-    token = new RootsNFT(id.toString());
+    token = new RootsEditionNFT(id.toString());
     const uri = contract.try_tokenURI(id);
     if (uri.reverted) {
-      log.info("Roots URI reverted", [id.toHexString()]);
+      log.info("Roots Edition URI reverted", [id.toHexString()]);
     } else {
       token.uri = uri.value;
     }
-    token.claimedICE64Edition = false;
+
+    token.releaseId = releaseId;
+    token.editionNumber = editionNumber;
   }
   token.owner = toWallet.id;
   token.save();

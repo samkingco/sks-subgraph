@@ -25,6 +25,32 @@ dataSources:
           handler: handleTransfer
       file: ./src/roots.ts
   - kind: ethereum
+    name: RootsEditions
+    network: mainnet
+    source:
+      address: "0x8837913173B42f4274062f504d906c27Eb804eb3"
+      abi: RootsEditions
+      startBlock: 16298602
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - RootsEditionNFT
+        - Wallet
+        - Transfer
+      abis:
+        - name: RootsEditions
+          file: ./abis/RootsEditions.json
+      eventHandlers:
+        - event: Initialized()
+          handler: handleInit
+        - event: ArtistProofMint(indexed uint256)
+          handler: handleArtistProofMint
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/rootsEditions.ts
+  - kind: ethereum
     name: ICE64
     network: mainnet
     source:
